@@ -6,6 +6,7 @@ using EmployeeBusinessLayer.Interface;
 
 using System.Linq;
 using EmployeeRepository.Interface;
+using EmployeeCommonLayer.Model;
 
 namespace EmployeeBusinessLayer.Services
 {

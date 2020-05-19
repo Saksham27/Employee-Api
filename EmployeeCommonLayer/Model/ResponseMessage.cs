@@ -1,11 +1,9 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
 namespace EmployeeCommonLayer.Model
 {
-
     [DataContract]
     public class ResponseMessage
     {
