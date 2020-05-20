@@ -1,7 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿/// ================================================
+/// File    : EmployeeRL.cs
+/// Author  : Saksham Singh
+/// Company : Bridgelabz Solution LLP
+/// ================================================
 namespace EmployeeRepository.Services
 {
     using System;
@@ -9,7 +10,6 @@ namespace EmployeeRepository.Services
     using System.Data.SqlClient;
     using System.Data;
     using EmployeeRepository.Interface;
-    using System.Threading.Tasks;
     using Microsoft.Extensions.Configuration;
     using EmployeeCommonLayer.Model;
 
@@ -31,23 +31,22 @@ namespace EmployeeRepository.Services
         /// </summary>
         /// <returns></returns>
         #region GetAllEmployeeDetails
-        public IEnumerable<EmployeeModel> GetAllEmployeeDetails()
+        public IEnumerable<DisplayAllDetails> GetAllEmployeeDetails()
         {
-            List<EmployeeModel> listEmployee = new List<EmployeeModel>();
+            List<DisplayAllDetails> listEmployee = new List<DisplayAllDetails>();
             SqlConnection connection = DatabaseConnection();
             SqlCommand command = StoreProcedureConnection("spGetEmployees", connection);
             connection.Open();
             SqlDataReader reader = command.ExecuteReader();
             while (reader.Read())
             {
-                EmployeeModel employee = new EmployeeModel
+                DisplayAllDetails employee = new DisplayAllDetails
                 {
                     EmployeeId = Convert.ToInt32(reader["EmployeeId"]),
                     FirstName = reader["FirstName"].ToString(),
                     LastName = reader["LastName"].ToString(),
                     Email = reader["Email"].ToString(),
                     UserName = reader["UserName"].ToString(),
-                    Password = reader["Password"].ToString(),
                     City = reader["City"].ToString()
                 };
                 listEmployee.Add(employee);
@@ -69,12 +68,13 @@ namespace EmployeeRepository.Services
 
             try
             {
+                string encrptedPassword = PasswordEncryptDecrypt.EncodePasswordToBase64(model.Password);
                 SqlCommand command = StoreProcedureConnection("spRegisterEmployee", connection);
                 command.Parameters.AddWithValue("FirstName", model.FirstName);
                 command.Parameters.AddWithValue("LastName", model.LastName);
                 command.Parameters.AddWithValue("Email", model.Email);
                 command.Parameters.AddWithValue("UserName", model.UserName);
-                command.Parameters.AddWithValue("Password", model.Password);
+                command.Parameters.AddWithValue("Password", encrptedPassword);
                 command.Parameters.AddWithValue("City", model.City);
                 connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
@@ -98,9 +98,9 @@ namespace EmployeeRepository.Services
         /// <param name="inputData"></param>
         /// <returns></returns>
         #region GetEmployeeDetails
-        public IEnumerable<EmployeeModel> GetEmployeeDetails(string inputData)
+        public IEnumerable<DisplayAllDetails> GetEmployeeDetails(string inputData)
         {
-            List<EmployeeModel> listEmployee = new List<EmployeeModel>();
+            List<DisplayAllDetails> listEmployee = new List<DisplayAllDetails>();
             SqlConnection connection = DatabaseConnection();
             SqlCommand command = StoreProcedureConnection("spGetEmployeeDetail", connection);
             command.Parameters.Add("@Data", SqlDbType.VarChar, 50).Value = inputData;
@@ -108,14 +108,13 @@ namespace EmployeeRepository.Services
             SqlDataReader reader = command.ExecuteReader();
             while (reader.Read())
             {
-                EmployeeModel employee = new EmployeeModel
+                DisplayAllDetails employee = new DisplayAllDetails
                 {
                     EmployeeId = Convert.ToInt32(reader["EmployeeId"]),
                     FirstName = reader["FirstName"].ToString(),
                     LastName = reader["LastName"].ToString(),
                     Email = reader["Email"].ToString(),
                     UserName = reader["UserName"].ToString(),
-                    Password = reader["Password"].ToString(),
                     City = reader["City"].ToString()
                 };
                 listEmployee.Add(employee);
@@ -131,9 +130,9 @@ namespace EmployeeRepository.Services
         /// <param name="inputData"></param>
         /// <returns></returns>
         #region GetEmployeeDetailsWithId
-        public IEnumerable<EmployeeModel> GetEmployeeDetailsWithId(EmployeeId inputData)
+        public IEnumerable<DisplayAllDetails> GetEmployeeDetailsWithId(EmployeeId inputData)
         {
-            List<EmployeeModel> listEmployee = new List<EmployeeModel>();
+            List<DisplayAllDetails> listEmployee = new List<DisplayAllDetails>();
             SqlConnection connection = DatabaseConnection();
             SqlCommand command = StoreProcedureConnection("spGetEmployeeDetailWithId", connection);
             command.Parameters.Add("@Id", SqlDbType.Int, 50).Value = inputData.ID;
@@ -141,14 +140,13 @@ namespace EmployeeRepository.Services
             SqlDataReader reader = command.ExecuteReader();
             while (reader.Read())
             {
-                EmployeeModel employee = new EmployeeModel
+                DisplayAllDetails employee = new DisplayAllDetails
                 {
                     EmployeeId = Convert.ToInt32(reader["EmployeeId"]),
                     FirstName = reader["FirstName"].ToString(),
                     LastName = reader["LastName"].ToString(),
                     Email = reader["Email"].ToString(),
                     UserName = reader["UserName"].ToString(),
-                    Password = reader["Password"].ToString(),
                     City = reader["City"].ToString()
                 };
                 listEmployee.Add(employee);
@@ -201,7 +199,7 @@ namespace EmployeeRepository.Services
             {
                 SqlCommand command = StoreProcedureConnection("spLoginEmployee", connection);
                 command.Parameters.Add("@UserName", SqlDbType.VarChar, 50).Value = loginData.UserName;
-                command.Parameters.Add("@Password", SqlDbType.VarChar, 50).Value = loginData.Password;
+                command.Parameters.Add("@Password", SqlDbType.VarChar, 50).Value = PasswordEncryptDecrypt.EncodePasswordToBase64(loginData.Password);
                 connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
                 reader.Read();
@@ -230,20 +228,18 @@ namespace EmployeeRepository.Services
             try
             {
                 UpdateModel employee = new UpdateModel();
-
                 SqlCommand command = StoreProcedureConnection("spUpdateEmployeeDetails", connection);
                 command.Parameters.AddWithValue("@EmployeeId", data.EmployeeId);
                 command.Parameters.AddWithValue("@FirstName", data.FirstName);
                 command.Parameters.AddWithValue("@LastName", data.LastName);
                 command.Parameters.AddWithValue("@Email", data.Email);
                 command.Parameters.AddWithValue("@UserName", data.UserName);
-                command.Parameters.AddWithValue("@Password", data.Password);
+                command.Parameters.AddWithValue("@Password", PasswordEncryptDecrypt.EncodePasswordToBase64(data.Password));
                 command.Parameters.AddWithValue("@City", data.City);
                 connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
                 reader.Read();
                 return (int)reader[0];
-
             }
             catch (Exception e)
             {
@@ -272,7 +268,7 @@ namespace EmployeeRepository.Services
         /// </summary>
         /// <param name="storeProcedureName"></param>
         /// <param name="connection"></param>
-        /// <returns></returns>
+        /// <returns> sql command </returns>
         #region StoreProcedureConnection
         public SqlCommand StoreProcedureConnection(string storeProcedureName, SqlConnection connection)
         {

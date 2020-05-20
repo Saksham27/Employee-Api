@@ -1,9 +1,8 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="LoginModel.cs" company="BridgeLabz Solutions LLP">
-//     Copyright (c) Company. All rights reserved.
-// </copyright>
-// <author> Saksham Singh </author>
-//-----------------------------------------------------------------------
+﻿/// ================================================
+/// File    : LoginModel.cs
+/// Author  : Saksham Singh
+/// Company : Bridgelabz Solution LLP
+/// ================================================
 #region namespace CommonLayer.Model
 namespace EmployeeCommonLayer.Model
 {

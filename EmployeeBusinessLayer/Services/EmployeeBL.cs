@@ -1,29 +1,47 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using EmployeeBusinessLayer.Interface;
-
-using System.Linq;
-using EmployeeRepository.Interface;
-using EmployeeCommonLayer.Model;
-
+﻿/// ================================================
+/// File    : EmployeeBL.cs
+/// Author  : Saksham Singh
+/// Company : Bridgelabz Solution LLP
+/// ================================================
 namespace EmployeeBusinessLayer.Services
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using EmployeeBusinessLayer.Interface;
+    using EmployeeCommonLayer.Model;
+    using EmployeeRepository.Interface;
+
+    /// <summary>
+    /// Poco class for Employee business layer
+    /// </summary>
     public class EmployeeBL : IEmployeeBL
     {
-        private IEmployeeRL employeeRepository;
+        /// <summary>
+        /// Instance of IEmployeeRL
+        /// </summary>
+        private readonly IEmployeeRL employeeRepository;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EmployeeBL"/> class.
+        /// </summary>
+        /// <param name="employeeRepo"> an instance of IEmployeeRL </param>
         public EmployeeBL(IEmployeeRL employeeRepo)
         {
-            employeeRepository = employeeRepo;
+            this.employeeRepository = employeeRepo;
         }
 
+        /// <summary>
+        /// Get all employee details API
+        /// </summary>
+        /// <returns> SMD response </returns>
+        #region GetAllEmployeeDetails
         public ResponseMessage GetAllEmployeeDetails()
         {
             try
             {
                 ResponseMessage response = new ResponseMessage();
-                List<EmployeeModel> data = employeeRepository.GetAllEmployeeDetails().ToList();
+                List<DisplayAllDetails> data = employeeRepository.GetAllEmployeeDetails().ToList();
                 if (data is null)
                 {
                     response.Status = false;
@@ -35,6 +53,7 @@ namespace EmployeeBusinessLayer.Services
                     response.Message = "Here is all employees details.";
                     response.Data = data;
                 }
+
                 return response;
             }
             catch (Exception exception)
@@ -42,10 +61,82 @@ namespace EmployeeBusinessLayer.Services
                 throw new Exception(exception.Message);
             }
         }
+        #endregion
 
+        /// <summary>
+        /// Get employee data by providing any employee data API
+        /// </summary>
+        /// <param name="inputData"> string data </param>
+        /// <returns> SMD response </returns>
+        #region GetEmployeeDetails
+        public ResponseMessage GetEmployeeDetails(string inputData)
+        {
+            try
+            {
+                ResponseMessage response = new ResponseMessage();
+                List<DisplayAllDetails> data = employeeRepository.GetEmployeeDetails(inputData).ToList();
+                if (data.Count == 0)
+                {
+                    response.Status = false;
+                    response.Message = "No such employee exists.";
+                }
+                else
+                {
+                    response.Status = true;
+                    response.Message = "Employee found. Here are the details";
+                    response.Data = data;
+                }
+
+                return response;
+            }
+            catch (Exception exception)
+            {
+                throw new Exception(exception.Message);
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// Get specific Employyee data by providing EmployeeId API
+        /// </summary>
+        /// <param name="inputData"> Employee Id instance </param>
+        /// <returns> SMD response </returns>
+        #region GetEmployeeDetailsWithId
+        public ResponseMessage GetEmployeeDetailsWithId(EmployeeId inputData)
+        {
+            try
+            {
+                ResponseMessage response = new ResponseMessage();
+                List<DisplayAllDetails> data = employeeRepository.GetEmployeeDetailsWithId(inputData).ToList();
+                if (data.Count == 0)
+                {
+                    response.Status = false;
+                    response.Message = "No such employee exists.";
+                }
+                else
+                {
+                    response.Status = true;
+                    response.Message = "Employee found. Here are the details";
+                    response.Data = data;
+                }
+
+                return response;
+            }
+            catch (Exception exception)
+            {
+                throw new Exception(exception.Message);
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// Register Employee API
+        /// </summary>
+        /// <param name="data"> Employee model instance </param>
+        /// <returns> SMD response </returns>
+        #region RegisterEmployee
         public ResponseMessage RegisterEmployee(EmployeeModel data)
         {
-
             try
             {
                 ResponseMessage response = new ResponseMessage();
@@ -60,15 +151,23 @@ namespace EmployeeBusinessLayer.Services
                     response.Status = false;
                     response.Message = "Registration failed. This Email Id or username already exists.";
                 }
+
                 return response;
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                throw new Exception(e.Message);
+                throw new Exception(exception.Message);
             }
         }
+        #endregion
 
-        public ResponseMessage EmployeeLoginBL(LoginModel loginData)
+        /// <summary>
+        /// Employee Login API
+        /// </summary>
+        /// <param name="loginData"> Login model instance </param>
+        /// <returns> SMD response </returns>
+        #region EmployeeLogin
+        public ResponseMessage EmployeeLogin(LoginModel loginData)
         {
             try
             {
@@ -84,86 +183,78 @@ namespace EmployeeBusinessLayer.Services
                     response.Status = false;
                     response.Message = "Login failed.";
                 }
+
                 return response;
             }
-            catch (Exception)
+            catch (Exception exception)
             {
-
-                throw;
+                throw new Exception(exception.Message);
             }
         }
+        #endregion
 
-        public ResponseMessage GetEmployeeDetails(string inputData)
-        {
-            ResponseMessage response = new ResponseMessage();
-            List<EmployeeModel> data = employeeRepository.GetEmployeeDetails(inputData).ToList();
-            if (data.Count == 0)
-            {
-                response.Status = false;
-                response.Message = "No such employee exists.";
-
-            }
-            else
-            {
-                response.Status = true;
-                response.Message = "Employee found. Here are the details";
-                response.Data = data;
-            }
-            return response;
-        }
-
-        public ResponseMessage GetEmployeeDetailsWithId(EmployeeId inputData)
-        {
-            ResponseMessage response = new ResponseMessage();
-            List<EmployeeModel> data = employeeRepository.GetEmployeeDetailsWithId(inputData).ToList();
-            if (data.Count == 0)
-            {
-                response.Status = false;
-                response.Message = "No such employee exists.";
-
-            }
-            else
-            {
-                response.Status = true;
-                response.Message = "Employee found. Here are the details";
-                response.Data = data;
-            }
-            return response;
-        }
-
+        /// <summary>
+        /// Delete employee API
+        /// </summary>
+        /// <param name="id"> Employee Id instance </param>
+        /// <returns> SMD response </returns>
+        #region DeleteEmployee
         public ResponseMessage DeleteEmployee(EmployeeId id)
         {
-            ResponseMessage response = new ResponseMessage();
-            int deletionStatus = employeeRepository.DeleteEmployee(id);
-            if (deletionStatus == 1)
+            try
             {
-                response.Status = true;
-                response.Message = "employee data successfully deleted.";
+                ResponseMessage response = new ResponseMessage();
+                int deletionStatus = employeeRepository.DeleteEmployee(id);
+                if (deletionStatus == 1)
+                {
+                    response.Status = true;
+                    response.Message = "employee data successfully deleted.";
+                }
+                else
+                {
+                    response.Status = false;
+                    response.Message = "No such employee exists.";
+                }
 
+                return response;
             }
-            else
+            catch (Exception exception)
             {
-                response.Status = false;
-                response.Message = "No such employee exists.";
+                throw new Exception(exception.Message);
             }
-            return response;
         }
+        #endregion
 
+        /// <summary>
+        /// Update Employee data API
+        /// </summary>
+        /// <param name="data"> Update model instance </param>
+        /// <returns> SMD response </returns>
+        #region UpdateEmployeeDetails
         public ResponseMessage UpdateEmployeeDetails(UpdateModel data)
         {
-            ResponseMessage response = new ResponseMessage();
-            int updationStatus = (employeeRepository.UpdateEmployeeDetails(data));
-            if (updationStatus == 1)
+            try
             {
-                response.Status = true;
-                response.Message = "Employee details updated.";
+                ResponseMessage response = new ResponseMessage();
+                int updationStatus = employeeRepository.UpdateEmployeeDetails(data);
+                if (updationStatus == 1)
+                {
+                    response.Status = true;
+                    response.Message = "Employee details updated.";
+                }
+                else
+                {
+                    response.Status = false;
+                    response.Message = "No such employee exists.";
+                }
+
+                return response;
             }
-            else
+            catch (Exception exception)
             {
-                response.Status = false;
-                response.Message = "No such employee exists.";
+                throw new Exception(exception.Message);
             }
-            return response;
         }
+        #endregion
     }
 }

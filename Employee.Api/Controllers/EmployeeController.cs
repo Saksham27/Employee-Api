@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using EmployeeBusinessLayer.Interface;
-using EmployeeCommonLayer.Model;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-
+﻿/// ================================================
+/// File    : EmployeeController.cs
+/// Author  : Saksham Singh
+/// Company : Bridgelabz Solution LLP
+/// ================================================
 namespace Employee.Api.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using EmployeeBusinessLayer.Interface;
+    using EmployeeCommonLayer.Model;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Configuration;
+
     [Route("api/[controller]")]
     [ApiController]
     public class EmployeeController : ControllerBase
@@ -136,7 +138,7 @@ namespace Employee.Api.Controllers
         {
             try
             {
-                response = businessLayer.EmployeeLoginBL(loginData);
+                response = businessLayer.EmployeeLogin(loginData);
                 if (response.Status == true)
                 {
                     return this.Ok(new { response.Status, response.Message });
@@ -174,3 +176,4 @@ namespace Employee.Api.Controllers
         }
 
     }
+}

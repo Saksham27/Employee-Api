@@ -1,9 +1,9 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="EmployeeModel.cs" company="BridgeLabz Solutions LLP">
-//     Copyright (c) Company. All rights reserved.
-// </copyright>
-// <author> Saksham Singh </author>
-//-----------------------------------------------------------------------
+﻿/// ================================================
+/// File    : EmployeeModel.cs
+/// Author  : Saksham Singh
+/// Company : Bridgelabz Solution LLP
+/// ================================================
+#region EmployeeCommonLayer.Model
 namespace EmployeeCommonLayer.Model
 {
     using System.ComponentModel;
@@ -12,6 +12,7 @@ namespace EmployeeCommonLayer.Model
     /// <summary>
     /// POCO class for Employee
     /// </summary>
+    #region EmployeeModel
     public class EmployeeModel
     {
         /// <summary>
@@ -55,5 +56,7 @@ namespace EmployeeCommonLayer.Model
         /// Gets or sets City
         /// </summary>
         public string City { get; set; }
-    } //// end : public class EmployeeModel
-} //// end : namespace CommonLayer.Model
+    }
+    #endregion
+}
+#endregion
